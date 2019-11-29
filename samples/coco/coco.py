@@ -47,6 +47,13 @@ import zipfile
 import urllib.request
 import shutil
 
+from keras.callbacks import ModelCheckpoint
+
+#Limit to one GPU
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
 
@@ -61,7 +68,7 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
 DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
-DEFAULT_DATASET_YEAR = "2014"
+DEFAULT_DATASET_YEAR = "2017"
 
 ############################################################
 #  Configurations
@@ -493,33 +500,40 @@ if __name__ == '__main__':
         # Right/Left flip 50% of the time
         augmentation = imgaug.augmenters.Fliplr(0.5)
 
+        if not os.path.exists('weights'):
+            os.makedirs('weights')
+
+        model_checkpoint_cb = ModelCheckpoint('weights/weights.{epoch:03d}.hdf5', save_weights_only=True)
+        callbacks = [model_checkpoint_cb]
+
         # *** This training schedule is an example. Update to your needs ***
 
         # Training - Stage 1
-        print("Training network heads")
-        model.train(dataset_train, dataset_val,
-                    learning_rate=config.LEARNING_RATE,
-                    epochs=40,
-                    layers='heads',
-                    augmentation=augmentation)
+        # print("Training network heads")
+        # model.train(dataset_train, dataset_val,
+        #             learning_rate=config.LEARNING_RATE,
+        #             epochs=40,
+        #             layers='heads',
+        #             augmentation=augmentation)
 
-        # Training - Stage 2
-        # Finetune layers from ResNet stage 4 and up
-        print("Fine tune Resnet stage 4 and up")
-        model.train(dataset_train, dataset_val,
-                    learning_rate=config.LEARNING_RATE,
-                    epochs=120,
-                    layers='4+',
-                    augmentation=augmentation)
+        # # Training - Stage 2
+        # # Finetune layers from ResNet stage 4 and up
+        # print("Fine tune Resnet stage 4 and up")
+        # model.train(dataset_train, dataset_val,
+        #             learning_rate=config.LEARNING_RATE,
+        #             epochs=120,
+        #             layers='4+',
+        #             augmentation=augmentation)
 
         # Training - Stage 3
         # Fine tune all layers
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
-                    epochs=160,
+                    epochs=20,
                     layers='all',
-                    augmentation=augmentation)
+                    augmentation=augmentation,
+                    callbacks=callbacks)
 
     elif args.command == "evaluate":
         # Validation dataset
