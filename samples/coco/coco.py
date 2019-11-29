@@ -48,7 +48,7 @@ import urllib.request
 import shutil
 
 from keras.callbacks import ModelCheckpoint
-from keras.callbacks.tensorboard_v1 import Tensorboard
+#from keras.callbacks.tensorboard_v1 import Tensorboard
 
 #Limit to one GPU
 import os
@@ -505,8 +505,8 @@ if __name__ == '__main__':
             os.makedirs('weights')
 
         model_checkpoint_cb = ModelCheckpoint('weights/weights.{epoch:03d}.hdf5', save_weights_only=True)
-        tensorboard_cb = Tensorboard(batch_size=8)
-        callbacks = [model_checkpoint_cb, tensorboard_cb]
+        #tensorboard_cb = Tensorboard(batch_size=8)
+        callbacks = [model_checkpoint_cb]
 
         # *** This training schedule is an example. Update to your needs ***
 
