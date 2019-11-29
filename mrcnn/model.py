@@ -2361,7 +2361,7 @@ class MaskRCNN():
         if os.name is 'nt':
             workers = 0
         else:
-            workers = 1#int(multiprocessing.cpu_count()/2)
+            workers = multiprocessing.cpu_count()
 
         self.keras_model.fit_generator(
             train_generator,
@@ -2373,7 +2373,7 @@ class MaskRCNN():
             validation_steps=self.config.VALIDATION_STEPS,
             max_queue_size=10,
             workers=workers,
-            use_multiprocessing=False,
+            use_multiprocessing=True,
         )
         self.epoch = max(self.epoch, epochs)
 
