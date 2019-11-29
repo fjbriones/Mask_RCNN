@@ -504,9 +504,9 @@ if __name__ == '__main__':
         if not os.path.exists('weights'):
             os.makedirs('weights')
 
-        model_checkpoint_cb = ModelCheckpoint('weights/weights.{epoch:03d}.hdf5', save_weights_only=True)
-        #tensorboard_cb = Tensorboard(batch_size=8)
-        callbacks = [model_checkpoint_cb]
+        # model_checkpoint_cb = ModelCheckpoint('weights/weights.{epoch:03d}.hdf5', save_weights_only=True)
+        # #tensorboard_cb = Tensorboard(batch_size=8)
+        # callbacks = [model_checkpoint_cb]
 
         # *** This training schedule is an example. Update to your needs ***
 
@@ -534,8 +534,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE / 10,
                     epochs=20,
                     layers='all',
-                    augmentation=augmentation,
-                    custom_callbacks=callbacks)
+                    augmentation=augmentation)
 
     elif args.command == "evaluate":
         # Validation dataset
