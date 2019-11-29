@@ -47,7 +47,8 @@ import zipfile
 import urllib.request
 import shutil
 
-from keras.callbacks import ModelCheckpoint, Tensorboard
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks.tensorboard_v1 import Tensorboard
 
 #Limit to one GPU
 import os
