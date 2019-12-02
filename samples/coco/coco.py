@@ -451,6 +451,7 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--flip_augmentation', required=True, 
                         choices=[0.25, 0.75],
+                        type=float,
                         help='Probability of flipping the image')
     parser.add_argument('--rotate_augmentation', required=True,
                         metavar="<True|False>",
