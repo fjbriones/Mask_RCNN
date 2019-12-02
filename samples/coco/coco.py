@@ -50,11 +50,6 @@ import shutil
 from keras.callbacks import ModelCheckpoint
 #from keras.callbacks.tensorboard_v1 import Tensorboard
 
-#Limit to one GPU
-import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
 
@@ -93,6 +88,19 @@ class CocoConfig(Config):
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 80  # COCO has 80 classes
+
+
+    def set_learning_rate(self, lr):
+        self.LEARNING_RATE = lr
+
+    def set_loss_weights(self, bbox_weight, segm_weight):
+        self.LOSS_WEIGHTS = {
+            "rpn_class_loss": 1.,
+            "rpn_bbox_loss": 1.,
+            "mrcnn_class_loss": 1.,
+            "mrcnn_bbox_loss": bbox_weight,
+            "mrcnn_mask_loss": segm_weight
+        }
 
 
 ############################################################
@@ -422,6 +430,7 @@ if __name__ == '__main__':
                         help='Year of the MS-COCO dataset (2014 or 2017) (default=2014)')
     parser.add_argument('--model', required=True,
                         metavar="/path/to/weights.h5",
+                        default='imagenet'
                         help="Path to weights .h5 file or 'coco'")
     parser.add_argument('--logs', required=False,
                         default=DEFAULT_LOGS_DIR,
@@ -436,6 +445,29 @@ if __name__ == '__main__':
                         metavar="<True|False>",
                         help='Automatically download and unzip MS-COCO files (default=False)',
                         type=bool)
+    parser.add_argument('--gpu', required=True,
+                        choices=[0, 1],
+                        help="GPU to use",
+                        type=int)
+    parser.add_argument('--augmentation', required=True, 
+                        choices=['flip', 'rotation'],
+                        help='Type of data augmentation to run')
+    parser.add_argument('--epochs', required=True,
+                        choices=[10, 20],
+                        help='Number of epochs for training',
+                        type=int)
+    parser.add_argument('--learning_rate', required=True,
+                        choices=[0.001, 0.01],
+                        help='Learning rate',
+                        type=float)
+    parser.add_argument('--weight_bbox_loss', required=True,
+                        choices=[1.0, 2.0],
+                        help="Weight of bounding box loss for MaskRCNN",
+                        type=float)
+    parser.add_argument('--weight_segm_loss', required=True,
+                        choices=[1.0, 2.0],
+                        help="Weight of segmentation loss for MaskRCNN",
+                        type=float)
     args = parser.parse_args()
     print("Command: ", args.command)
     print("Model: ", args.model)
@@ -444,9 +476,15 @@ if __name__ == '__main__':
     print("Logs: ", args.logs)
     print("Auto Download: ", args.download)
 
+    #Limit to one GPU
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+    os.environ["CUDA_VISIBLE_DEVICES"]=str(args.gpu)
+
     # Configurations
     if args.command == "train":
         config = CocoConfig()
+        config.set_learning_rate(args.learning_rate)
+        config.set_loss_weights(args.weight_bbox_loss, args.weight_segm_loss)
     else:
         class InferenceConfig(CocoConfig):
             # Set batch size to 1 since we'll be running inference on
@@ -498,9 +536,11 @@ if __name__ == '__main__':
         dataset_val.prepare()
 
         # Image Augmentation
-        # Right/Left flip 50% of the time
-        # augmentation = imgaug.augmenters.Fliplr(0.5)
-        augmentation = imgaug.augmenters.Rot90(1, True)
+        if args.augmentation == 'flip':
+            # Right/Left flip 50% of the time
+            augmentation = imgaug.augmenters.Fliplr(0.5)
+        else:
+            augmentation = imgaug.augmenters.Rot90(1, True)
 
         if not os.path.exists('weights'):
             os.makedirs('weights')
@@ -512,11 +552,12 @@ if __name__ == '__main__':
         # *** This training schedule is an example. Update to your needs ***
         #Lower number of epochs since batch size = 8 instead of 2
 
+
         # Training - Stage 1
         # print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=3,#40,
+                    epochs=int(args.epochs/4.0),#40,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -525,7 +566,7 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=7,#120,
+                    epochs=int(args.epochs/4.0*3.0),#120,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -534,7 +575,7 @@ if __name__ == '__main__':
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=10,#160,
+                    epochs=args.epochs,#160,
                     layers='all',
                     augmentation=augmentation)
 
