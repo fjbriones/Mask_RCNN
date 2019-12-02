@@ -449,16 +449,22 @@ if __name__ == '__main__':
                         choices=[0, 1],
                         help="GPU to use",
                         type=int)
-    parser.add_argument('--augmentation', required=True, 
-                        choices=['flip', 'rotation'],
-                        help='Type of data augmentation to run')
+    parser.add_argument('--flip_augmentation', required=True, 
+                        choices=[0.25, 0.75],
+                        help='Probability of flipping the image')
+    parser.add_argument('--rotate_augmentation', required=True,
+                        metavar="<True|False>",
+                        help='Whether to rotate or not the image',
+                        type=bool)
     parser.add_argument('--epochs', required=True,
                         choices=[10, 20],
+                        default=10,
                         help='Number of epochs for training',
                         type=int)
     parser.add_argument('--learning_rate', required=True,
                         choices=[0.001, 0.01],
                         help='Learning rate',
+                        default=0.001
                         type=float)
     parser.add_argument('--weight_bbox_loss', required=True,
                         choices=[1.0, 2.0],
@@ -536,12 +542,11 @@ if __name__ == '__main__':
         dataset_val.prepare()
 
         # Image Augmentation
-        if args.augmentation == 'flip':
-            # Right/Left flip 50% of the time
-            augmentation = imgaug.augmenters.Fliplr(0.5)
-        else:
-            augmentation = imgaug.augmenters.Rot90(1, True)
-
+        # Right/Left flip 50% of the time
+        augmentation = imgaug.augmenters.Fliplr(args.flip_augmentation)
+        if args.rotate_augmentation:
+            augmentation = [augmentation, imgaug.augmenters.Rot90(1, True)]
+        
         if not os.path.exists('weights'):
             os.makedirs('weights')
 
@@ -574,18 +579,10 @@ if __name__ == '__main__':
         # Fine tune all layers
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
-                    learning_rate=config.LEARNING_RATE,
+                    learning_rate=config.LEARNING_RATE / 10.0,
                     epochs=args.epochs,#160,
                     layers='all',
                     augmentation=augmentation)
-
-        dataset_val = CocoDataset()
-        val_type = "val" if args.year in '2017' else "minival"
-        coco = dataset_val.load_coco(args.dataset, val_type, year=args.year, return_coco=True, auto_download=args.download)
-        dataset_val.prepare()
-        print("Running COCO evaluation on {} images.".format(args.limit))
-        evaluate_coco(model, dataset_val, coco, "bbox", limit=int(args.limit))
-        evaluate_coco(model, dataset_val, coco, "segm", limit=int(args.limit))
 
     elif args.command == "evaluate":
         # Validation dataset
