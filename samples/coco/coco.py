@@ -430,7 +430,7 @@ if __name__ == '__main__':
                         help='Year of the MS-COCO dataset (2014 or 2017) (default=2014)')
     parser.add_argument('--model', required=True,
                         metavar="/path/to/weights.h5",
-                        default='imagenet'
+                        default='imagenet',
                         help="Path to weights .h5 file or 'coco'")
     parser.add_argument('--logs', required=False,
                         default=DEFAULT_LOGS_DIR,
