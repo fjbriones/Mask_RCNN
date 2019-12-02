@@ -464,7 +464,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', required=True,
                         choices=[0.001, 0.01],
                         help='Learning rate',
-                        default=0.001
+                        default=0.001,
                         type=float)
     parser.add_argument('--weight_bbox_loss', required=True,
                         choices=[1.0, 2.0],
