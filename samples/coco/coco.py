@@ -477,9 +477,9 @@ if __name__ == '__main__':
     else:
         model_path = args.model
 
-    # Load weights
-    #print("Loading weights ", model_path)
-    #model.load_weights(model_path, by_name=True)
+    #Load weights
+    print("Loading weights ", model_path)
+    model.load_weights(model_path, by_name=True)
 
     # Train or evaluate
     if args.command == "train":
@@ -509,30 +509,31 @@ if __name__ == '__main__':
         # callbacks = [model_checkpoint_cb]
 
         # *** This training schedule is an example. Update to your needs ***
+        #Lower number of epochs since batch size = 8 instead of 2
 
         # Training - Stage 1
         # print("Training network heads")
-        # model.train(dataset_train, dataset_val,
-        #             learning_rate=config.LEARNING_RATE,
-        #             epochs=40,
-        #             layers='heads',
-        #             augmentation=augmentation)
+        model.train(dataset_train, dataset_val,
+                    learning_rate=config.LEARNING_RATE,
+                    epochs=10,#40,
+                    layers='heads',
+                    augmentation=augmentation)
 
         # # Training - Stage 2
-        # # Finetune layers from ResNet stage 4 and up
-        # print("Fine tune Resnet stage 4 and up")
-        # model.train(dataset_train, dataset_val,
-        #             learning_rate=config.LEARNING_RATE,
-        #             epochs=120,
-        #             layers='4+',
-        #             augmentation=augmentation)
+        # Finetune layers from ResNet stage 4 and up
+        print("Fine tune Resnet stage 4 and up")
+        model.train(dataset_train, dataset_val,
+                    learning_rate=config.LEARNING_RATE,
+                    epochs=30,#120,
+                    layers='4+',
+                    augmentation=augmentation)
 
         # Training - Stage 3
         # Fine tune all layers
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=160,
+                    epochs=40,#160,
                     layers='all',
                     augmentation=augmentation)
 
