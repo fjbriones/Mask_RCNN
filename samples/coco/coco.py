@@ -86,7 +86,7 @@ class CocoConfig(Config):
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
-    IMAGES_PER_GPU = 8
+    IMAGES_PER_GPU = 2
 
     # Uncomment to train on 8 GPUs (default is 1)
     # GPU_COUNT = 8
@@ -499,8 +499,8 @@ if __name__ == '__main__':
 
         # Image Augmentation
         # Right/Left flip 50% of the time
-        # augmentation = imgaug.augmenters.Fliplr(0.5)
-        augmentation = imgaug.augmenters.Rot90(1, True)
+        augmentation = imgaug.augmenters.Fliplr(0.5)
+        #augmentation = imgaug.augmenters.Rot90(1, True)
 
         if not os.path.exists('weights'):
             os.makedirs('weights')
@@ -510,13 +510,12 @@ if __name__ == '__main__':
         # callbacks = [model_checkpoint_cb]
 
         # *** This training schedule is an example. Update to your needs ***
-        #Lower number of epochs since batch size = 8 instead of 2
 
         # Training - Stage 1
         # print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=10,#40,
+                    epochs=40,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -525,7 +524,7 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=30,#120,
+                    epochs=120,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -534,7 +533,7 @@ if __name__ == '__main__':
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=40,#160,
+                    epochs=160,
                     layers='all',
                     augmentation=augmentation)
 
