@@ -499,7 +499,8 @@ if __name__ == '__main__':
 
         # Image Augmentation
         # Right/Left flip 50% of the time
-        augmentation = imgaug.augmenters.Fliplr(0.5)
+        # augmentation = imgaug.augmenters.Fliplr(0.5)
+        augmentation = imgaug.augmenters.Rot90(1, True)
 
         if not os.path.exists('weights'):
             os.makedirs('weights')
