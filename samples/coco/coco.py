@@ -516,7 +516,7 @@ if __name__ == '__main__':
         # print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=10,#40,
+                    epochs=3,#40,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -525,7 +525,7 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=30,#120,
+                    epochs=7,#120,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -534,9 +534,17 @@ if __name__ == '__main__':
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=40,#160,
+                    epochs=10,#160,
                     layers='all',
                     augmentation=augmentation)
+
+        dataset_val = CocoDataset()
+        val_type = "val" if args.year in '2017' else "minival"
+        coco = dataset_val.load_coco(args.dataset, val_type, year=args.year, return_coco=True, auto_download=args.download)
+        dataset_val.prepare()
+        print("Running COCO evaluation on {} images.".format(args.limit))
+        evaluate_coco(model, dataset_val, coco, "bbox", limit=int(args.limit))
+        evaluate_coco(model, dataset_val, coco, "segm", limit=int(args.limit))
 
     elif args.command == "evaluate":
         # Validation dataset
