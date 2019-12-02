@@ -32,6 +32,7 @@ import sys
 import time
 import numpy as np
 import imgaug  # https://github.com/aleju/imgaug (pip3 install imgaug)
+import imgaug.augmenters as iaa
 
 # Download and install the Python COCO tools from https://github.com/waleedka/coco
 # That's a fork from the original https://github.com/pdollar/coco with a bug
@@ -454,9 +455,9 @@ if __name__ == '__main__':
                         type=float,
                         help='Probability of flipping the image')
     parser.add_argument('--rotate_augmentation', required=True,
-                        metavar="<True|False>",
+                        choices=[0.25,0.75],
                         help='Whether to rotate or not the image',
-                        type=bool)
+                        type=float)
     parser.add_argument('--epochs', required=True,
                         choices=[10, 20],
                         default=10,
@@ -544,9 +545,9 @@ if __name__ == '__main__':
 
         # Image Augmentation
         # Right/Left flip 50% of the time
-        augmentation = imgaug.augmenters.Fliplr(args.flip_augmentation)
-        if args.rotate_augmentation:
-            augmentation = [augmentation, imgaug.augmenters.Rot90(1, True)]
+        augmentation = iaa.Sequential([
+            iaa.Fliplr(args.flip_augmentation),
+            iaa.Sometimes(args.rotate_augmentation, iaa.Rot90(1, True))])
         
         if not os.path.exists('weights'):
             os.makedirs('weights')
