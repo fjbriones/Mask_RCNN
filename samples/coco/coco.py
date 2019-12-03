@@ -463,7 +463,7 @@ if __name__ == '__main__':
                         default=10,
                         help='Number of epochs for training',
                         type=int)
-    parser.add_argument('--learning_rate', required=True,
+    parser.add_argument('--learning_rate', required=False,
                         choices=[0.001, 0.01],
                         help='Learning rate',
                         default=0.001,
