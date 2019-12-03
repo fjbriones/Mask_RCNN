@@ -5,7 +5,7 @@ ROTATE_AUGMENTATION_VALS=( 0.25 0.75 )
 EPOCHS=( 10 20)
 BBOX_LOSS_WEIGHTS=( 1.0 2.0)
 SEGM_LOSS_WEIGHTS=( 1.0 2.0)
-i=0
+i=16
 for rotate_augmentation in "${ROTATE_AUGMENTATION_VALS[@]}" 
 do
 	for epoch in "${EPOCHS[@]}"
