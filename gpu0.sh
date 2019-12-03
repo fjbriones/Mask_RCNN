@@ -23,28 +23,28 @@ do
 				echo "BOUNDING BOX LOSS WEIGHT: $bbox_weight"
 				echo "Training the model"
 
-				python3 samples/coco/coco.py train /
-					--dataset=/home/ferdie/Datasets/MSCOCO /
-					--model=coco /
-					--logs=logs${i} /
-					--gpu=$GPU_ID /
-					--flip_augmentation=$FLIP_AUGMENTATION_VAL /
-					--rotate_augmentation=$rotate_augmentation /
-					--epochs=$epoch /
-					--weight_bbox_loss=$bbox_weight /
+				python3 samples/coco/coco.py train \
+					--dataset=/home/ferdie/Datasets/MSCOCO \
+					--model=coco \
+					--logs=logs${i} \
+					--gpu=$GPU_ID \
+					--flip_augmentation=$FLIP_AUGMENTATION_VAL \
+					--rotate_augmentation=$rotate_augmentation \
+					--epochs=$epoch \
+					--weight_bbox_loss=$bbox_weight \
 					--weight_segm_loss=$segm_weight > logs/log${i}_train.txt
 
 				echo "Evaluating the model"
 
-				python3 samples/coco/coco.py evaluate /
-					--dataset=/home/ferdie/Datasets/MSCOCO /
-					--model=last /
-					--logs=logs${i} /
-					--gpu=$GPU_ID /
-					--flip_augmentation=$FLIP_AUGMENTATION_VAL /
-					--rotate_augmentation=$rotate_augmentation /
-					--epochs=$epoch /
-					--weight_bbox_loss=$bbox_weight /
+				python3 samples/coco/coco.py evaluate \
+					--dataset=/home/ferdie/Datasets/MSCOCO \
+					--model=last \
+					--logs=logs${i} \
+					--gpu=$GPU_ID \
+					--flip_augmentation=$FLIP_AUGMENTATION_VAL \
+					--rotate_augmentation=$rotate_augmentation \
+					--epochs=$epoch \
+					--weight_bbox_loss=$bbox_weight \
 					--weight_segm_loss=$segm_weight > logs/log${i}.txt
 
 			done
