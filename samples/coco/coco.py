@@ -52,7 +52,7 @@ from keras.callbacks import ModelCheckpoint
 #from keras.callbacks.tensorboard_v1 import Tensorboard
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("../../")
+ROOT_DIR = os.path.abspath(".")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library

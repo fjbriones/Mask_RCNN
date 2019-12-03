@@ -1,6 +1,6 @@
 #!/bin/bash
-python3 samples/coco/coco.py train --dataset=/home/ferdie/Datasets/MSCOCO --model=coco --logs=logs1 --gpu=0 --flip_augmentation=0.25 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0
-python3 samples/coco/coco.py evaluate --dataset=/home/ferdie/Datasets/MSCOCO --model=last --logs=logs1 --gpu=0 --flip_augmentation=0.25 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs1.txt
+python3 samples/coco/coco.py train --dataset=/home/ferdie/Datasets/MSCOCO --model=coco --logs=logs1 --gpu=0 --flip_augmentation=0.25 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs/logs1_train.txt
+python3 samples/coco/coco.py evaluate --dataset=/home/ferdie/Datasets/MSCOCO --model=last --logs=logs1 --gpu=0 --flip_augmentation=0.25 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs/logs1.txt
 
-python3 samples/coco/coco.py train --dataset=/home/ferdie/Datasets/MSCOCO --model=coco --logs=logs2 --gpu=0 --flip_augmentation=0.75 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0
-python3 samples/coco/coco.py evaluate --dataset=/home/ferdie/Datasets/MSCOCO --model=last --logs=logs2 --gpu=0 --flip_augmentation=0.75 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs2.txt
+python3 samples/coco/coco.py train --dataset=/home/ferdie/Datasets/MSCOCO --model=coco --logs=logs2 --gpu=0 --flip_augmentation=0.75 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs/logs2_train.txt
+python3 samples/coco/coco.py evaluate --dataset=/home/ferdie/Datasets/MSCOCO --model=last --logs=logs2 --gpu=0 --flip_augmentation=0.75 --rotate_augmentation=0.25 --epochs=10 --learning_rate=0.001 --weight_bbox_loss=1.0 --weight_segm_loss=1.0 > logs/logs2.txt
